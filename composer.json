@@ -1,0 +1,18 @@
+{
+    "name": "aimtofeel/wp-social-wall",
+    "description": "Makes a social wall function available from multiple sources.",
+    "keywords": ["Wordpress"],
+    "homepage": "https://aimtofeel.com",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "AimToFeel",
+            "email": "we@aimtofeel.com",
+            "homepage": "https://aimtofeel.com"
+        }
+    ],
+    "type": "wordpress-plugin",
+    "require": {
+        "composer/installers": "^v1.12.0"
+    }
+}
