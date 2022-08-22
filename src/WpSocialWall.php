@@ -2,6 +2,7 @@
 
 namespace WpSocialWall\src;
 
+use WpSocialWall\src\api\PostsRequest;
 use WpSocialWall\src\hooks\ActivationHook;
 use WpSocialWall\src\hooks\DeactivationHook;
 
@@ -29,6 +30,9 @@ class WpSocialWall
     {
         $deactivationHook = new DeactivationHook();
         register_deactivation_hook($this->file, [$deactivationHook, 'run']);
+
+        var_dump((new PostsRequest())->execute('facebook'));
+        die;
     }
 
     /**
