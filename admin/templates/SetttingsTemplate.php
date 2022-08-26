@@ -60,7 +60,7 @@ do_action('wp_social_wall_render_token_information');
         return;
       }
 
-      fetch('http://api.wp-social-wall.feelgoodtechnology.nl/twitter/register', {
+      fetch('https://api.wp-social-wall.feelgoodtechnology.nl/twitter/register', {
         method: 'POST',
         mode: 'cors',
         headers: {
