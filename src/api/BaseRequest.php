@@ -4,7 +4,7 @@ namespace WpSocialWall\src\api;
 
 class BaseRequest
 {
-    private $baseUrl = 'http://api.wp-social-wall.feelgoodtechnology.nl';
+    private $baseUrl = 'https://api.wp-social-wall.feelgoodtechnology.nl';
 
     /**
      * Do post request.
