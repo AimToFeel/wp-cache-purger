@@ -2,7 +2,8 @@
 
 namespace WpSocialWall\admin;
 
-use WpSocialWall\src\api\Register;
+use WpSocialWall\src\api\SitesRequest;
+use WpSocialWall\src\api\TokensRequest;
 
 class WpSocialWallAdmin
 {
@@ -27,8 +28,12 @@ class WpSocialWallAdmin
     public function initialize(): void
     {
         $platforms = [
-            'Facebook', 'Instagram', 'Twitter', 'TikTok', 'Linkedin',
+            'Facebook', 'Twitter', 'Instagram', 'TikTok', 'Linkedin',
         ];
+
+        $this->registerSite();
+
+        $this->registerTwitterCallback();
 
         foreach ($platforms as $platform) {
             $platformLower = strtolower($platform);
@@ -80,6 +85,9 @@ class WpSocialWallAdmin
                         data-scope="pages_read_engagement"
                     ></div>
                 ';
+                break;
+            case 'twitter':
+                echo '<button type="button" class="button button-primary" id="twitter-login-button">Login with Twitter</button>';
                 break;
             default:
         }
@@ -169,9 +177,24 @@ class WpSocialWallAdmin
         $token = get_option('wp_social_wall_api_token');
 
         if ($token) {
-            echo '<p>Connection with wp-social-wall API enstablished, access token: "' . $token . '".</p>';
+            echo '<p id="api-token" data-token="' . $token . '">Connection with wp-social-wall API enstablished, access token: "' . $token . '".</p>';
         } else {
-            echo '<p>Connection with wp-social-wall API not yet enstablished.</p>';
+            echo '<p id="api-token">Connection with wp-social-wall API not yet enstablished.</p>';
+        }
+    }
+
+    private function registerSite(): void
+    {
+        $siteToken = get_option('wp_social_wall_api_token');
+
+        if ($siteToken) {
+            return;
+        }
+
+        $result = (new SitesRequest())->store($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
+        if ($result) {
+            update_option('wp_social_wall_api_token', $result->site->access_token);
         }
     }
 
@@ -186,11 +209,19 @@ class WpSocialWallAdmin
             return;
         }
 
-        $result = (new Register())->execute($platform, $token, $pageId, $userId);
+        $result = (new TokensRequest())->store($platform, $token, null, $pageId, $userId);
 
         if ($result) {
-            update_option('wp_social_wall_api_token', $result->site->access_token);
             update_option('wp_social_wall_' . $platform . '_token', null);
         }
+    }
+
+    private function registerTwitterCallback(): void
+    {
+        if (!isset($_GET['oauthToken']) || !isset($_GET['oauthVerifier'])) {
+            return;
+        }
+
+        (new TokensRequest())->store('twitter', $_GET['oauthToken'], $_GET['oauthVerifier']);
     }
 }

@@ -2,21 +2,22 @@
 
 namespace WpSocialWall\src\api;
 
-class RegisterRequest extends BaseRequest
+class TokensRequest extends BaseRequest
 {
-    public function execute(
+    public function store(
         $platform,
         $accessToken,
-        $pageId,
-        $userId
+        $verifyToken = null,
+        $pageId = null,
+        $userId = null
     ) {
         return $this->doPost(
-            'register',
+            'tokens',
             [
-                'address' => get_site_url(),
                 'platform' => $platform,
                 'pageId' => $pageId,
                 'accessToken' => $accessToken,
+                'verifyToken' => $verifyToken,
                 'userId' => $userId,
             ]
         );

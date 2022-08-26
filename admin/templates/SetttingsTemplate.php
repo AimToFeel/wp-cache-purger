@@ -14,19 +14,19 @@ do_action('wp_social_wall_render_token_information');
 
 
 <script>
-    function setFacebookAuthentication(event) {
-      event.preventDefault();
+  function setFacebookAuthentication(event) {
+    event.preventDefault();
 
-      FB.getLoginStatus(function(response) {
-        const tokenInput = document.querySelector('input[name="wp_social_wall_facebook_token"]');
-        const userIdInput = document.querySelector('input[name="wp_social_wall_facebook_user_id"]');
+    FB.getLoginStatus(function(response) {
+      const tokenInput = document.querySelector('input[name="wp_social_wall_facebook_token"]');
+      const userIdInput = document.querySelector('input[name="wp_social_wall_facebook_user_id"]');
 
-        if (response.authResponse) {
-          tokenInput.value = response.authResponse.accessToken;
-          userIdInput.value = response.authResponse.userID;
-        }
-      });
-    }
+      if (response.authResponse) {
+        tokenInput.value = response.authResponse.accessToken;
+        userIdInput.value = response.authResponse.userID;
+      }
+    });
+  }
 
   window.fbAsyncInit = function() {
     FB.init({
@@ -46,6 +46,34 @@ do_action('wp_social_wall_render_token_information');
      js.src = "https://connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
+
+   (() => {
+    const twitterLoginButton = document.getElementById('twitter-login-button');
+    const apiToken = document.getElementById('api-token');
+
+    twitterLoginButton.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      const { token } = apiToken.dataset;
+
+      if (!token) {
+        return;
+      }
+
+      fetch('http://api.wp-social-wall.feelgoodtechnology.nl/twitter/register', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      }).then(async (response) => {
+        const payload = await response.json();
+
+        location.href = payload.redirectUrl;
+      });
+    });
+   })();
 </script>
 
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v14.0&appId=516765780209891&autoLogAppEvents=1" nonce="J0Cvd48y"></script>

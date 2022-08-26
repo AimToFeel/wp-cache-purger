@@ -14,6 +14,7 @@ class ActivationHook
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             platform varchar(255) NOT NULL,
             post_id varchar(255) NOT NULL,
+            post_data JSON NOT NULL,
             post_date datetime NOT NULL,
             fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
