@@ -14,7 +14,6 @@
     ],
     "type": "wordpress-plugin",
     "require": {
-        "composer/installers": "^v1.12.0",
-        "facebook/graph-sdk": "^5.1"
+        "composer/installers": "^v1.12.0"
     }
 }
