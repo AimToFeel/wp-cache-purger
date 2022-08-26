@@ -27,8 +27,72 @@ class WpSocialWall
      */
     public function initialize(): void
     {
+        define('WP_SOCIAL_WALL_PLATFORMS', [
+            'Facebook', 'Twitter', 'Instagram', 'TikTok', 'Linkedin',
+        ]);
+
         $deactivationHook = new DeactivationHook();
         register_deactivation_hook($this->file, [$deactivationHook, 'run']);
+
+        if (!wp_next_scheduled('wp_social_wall_fetch_posts')) {
+            wp_schedule_event(time(), 'every_two_hours', 'wp_social_wall_fetch_posts');
+        }
+    }
+
+    /**
+     * Fetch posts of all enabled services
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function fetchPosts(): void
+    {
+        foreach (WP_SOCIAL_WALL_PLATFORMS as $platform) {
+            $platformLower = strtolower($platform);
+
+            $active = get_option("wp_social_wall_{$platformLower}_active");
+
+            if (!$active) {
+                continue;
+            }
+
+            (new Fetcher())->fetchPlatform($platformLower);
+        }
+    }
+
+    /**
+     * Define cron schedule.
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function defineCronSchedule(array $schedules): array
+    {
+        $schedules['every_two_hours'] = [
+            'interval' => 7200,
+            'display' => __('Every 2 hours'),
+        ];
+
+        return $schedules;
+    }
+
+    /**
+     * Get posts.
+     *
+     * @param array $parameters
+     *
+     * @return array
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function getPosts($parameters = []): array
+    {
+        return (new Posts())->get();
     }
 
     /**
@@ -42,6 +106,9 @@ class WpSocialWall
     public function defineHooks(): void
     {
         add_action('init', [$this, 'initialize']);
+        add_filter('cron_schedules', [$this, 'defineCronSchedule']);
+        add_action('wp_social_wall_fetch_posts', [$this, 'fetchPosts']);
+        add_filter('get_wp_social_wall_posts', [$this, 'getPosts']);
 
         $activationHook = new ActivationHook();
         register_activation_hook($this->file, [$activationHook, 'run']);

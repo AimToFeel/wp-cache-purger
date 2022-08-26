@@ -27,9 +27,7 @@ class WpSocialWallAdmin
      */
     public function initialize(): void
     {
-        $platforms = [
-            'Facebook', 'Twitter', 'Instagram', 'TikTok', 'Linkedin',
-        ];
+        $platforms = WP_SOCIAL_WALL_PLATFORMS;
 
         $this->registerSite();
 
