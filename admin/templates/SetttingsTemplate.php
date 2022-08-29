@@ -30,7 +30,7 @@ do_action('wp_social_wall_render_token_information');
 
   window.fbAsyncInit = function() {
     FB.init({
-      appId: '516765780209891',
+      appId: '5238538342939990',
       cookie: false,
       xfbml: true,
       version: 'v14.0'
