@@ -33,10 +33,10 @@ class WpSocialWallAdmin
 
         $this->registerTwitterCallback();
 
+        $connectedPlatforms = $this->fetchConnectedPlatforms();
+
         foreach ($platforms as $platform) {
             $platformLower = strtolower($platform);
-
-            $this->registerPlatform($platformLower);
 
             register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_id", [
                 'type' => 'string',
@@ -54,25 +54,24 @@ class WpSocialWallAdmin
                 'default' => null,
             ]);
             register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_active");
-            add_settings_section("wp-social-wall-settings-{$platformLower}", "{$platform} settings", function () use ($platformLower) {$this->renderSection($platformLower);}, 'social-wall');
+            add_settings_section("wp-social-wall-settings-{$platformLower}", "{$platform} settings", function () use ($platformLower, $connectedPlatforms) {$this->renderSection($platformLower, $connectedPlatforms);}, 'social-wall');
             add_settings_field("wp-social-wall-{$platformLower}-active", "Include {$platform} posts", function () use ($platformLower) {$this->renderPlatformActiveInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
-            // add_settings_field("wp-social-wall-{$platformLower}-id", "{$platform} ID", function () use ($platformLower) {$this->renderPlatformIdInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
-
-            // if ($platformLower === 'facebook') {
-            //     add_settings_field("wp-social-wall-{$platformLower}-user-id", "{$platform} User ID", function () use ($platformLower) {$this->renderPlatformUserIdInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
-            // }
-
-            // add_settings_field("wp-social-wall-{$platformLower}-token", "{$platform} Token", function () use ($platformLower) {$this->renderPlatformTokenInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
         }
 
     }
 
-    public function renderSection($platform): void
+    public function renderSection($platform, $connectedPlatforms): void
     {
         $token = get_option('wp_social_wall_api_token');
         $site = explode('wp-admin/', $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])[0] . 'wp-admin/admin.php?page=social-wall';
 
         echo '<hr />';
+
+        if (in_array($platform, $connectedPlatforms)) {
+            echo '<div><p>Platform is connected: <i style="width: 10px; height: 10px; border-radius: 50%; background: #32a852;"></i></p></div>';
+        } else {
+            echo '<div><p>Platform not connected: <i style="width: 10px; height: 10px; border-radius: 50%; background: #d63638;"></i></p></div>';
+        }
 
         switch ($platform) {
             case 'facebook':
@@ -84,51 +83,6 @@ class WpSocialWallAdmin
             default:
         }
     }
-
-    public function renderPlatformIdInput($platform): void
-    {
-        $value = get_option('wp_social_wall_' . $platform . '_id');
-
-        echo '
-            <input name="wp_social_wall_' . $platform . '_id" type="text" value="' . $value . '" />
-        ';
-
-        switch ($platform) {
-            case 'facebook':
-                echo '
-                    <p>Facebook page ID of which to fetch posts from.</p>
-                ';
-                break;
-            default:
-        }
-    }
-
-    public function renderPlatformUserIdInput($platform): void
-    {
-        $value = get_option('wp_social_wall_' . $platform . '_user_id');
-
-        echo '
-            <input name="wp_social_wall_' . $platform . '_user_id" type="text" value="' . $value . '" />
-        ';
-    }
-
-    public function renderPlatformTokenInput($platform): void
-    {
-        $value = get_option('wp_social_wall_' . $platform . '_token');
-
-        echo '<input name="wp_social_wall_' . $platform . '_token" type="text" value="' . $value . '" />';
-
-        switch ($platform) {
-            case 'facebook':
-                echo '
-                    <button class="button button-secondary" onclick="setFacebookAuthentication(event)">Set Facebook access token</button>
-                    <p>Use the sign-in with facebook button. Afterwards click this button to set the access token & user ID. This is a single use token, this field will be reset after saving.</p>
-                ';
-                break;
-            default:
-        }
-    }
-
     public function renderPlatformActiveInput($platform): void
     {
         $value = get_option('wp_social_wall_' . $platform . '_active');
@@ -190,24 +144,6 @@ class WpSocialWallAdmin
         }
     }
 
-    private function registerPlatform($platform): void
-    {
-        $active = get_option('wp_social_wall_' . $platform . '_active');
-        $token = get_option('wp_social_wall_' . $platform . '_token');
-        $pageId = get_option('wp_social_wall_' . $platform . '_id');
-        $userId = get_option('wp_social_wall_' . $platform . '_user_id');
-
-        if (!$active || !$token || !$pageId || !$userId) {
-            return;
-        }
-
-        $result = (new TokensRequest())->store($platform, $token, null, $pageId, $userId);
-
-        if ($result) {
-            update_option('wp_social_wall_' . $platform . '_token', null);
-        }
-    }
-
     private function registerTwitterCallback(): void
     {
         if (!isset($_GET['oauthToken']) || !isset($_GET['oauthVerifier'])) {
@@ -215,5 +151,10 @@ class WpSocialWallAdmin
         }
 
         (new TokensRequest())->store('twitter', $_GET['oauthToken'], $_GET['oauthVerifier']);
+    }
+
+    private function fetchConnectedPlatforms(): array
+    {
+        return (new TokensRequest())->get()->data;
     }
 }

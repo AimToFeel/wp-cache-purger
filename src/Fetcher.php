@@ -53,7 +53,7 @@ class Fetcher
                 $platform,
                 $post->id,
                 json_encode($post),
-                date($post->createdAt),
+                explode('+', $post->createdAt)[0],
                 date('Y-m-d H:i:s')
             )
         );

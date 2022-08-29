@@ -22,4 +22,17 @@ class TokensRequest extends BaseRequest
             ]
         );
     }
+
+    /**
+     * Get platforms connected to authentication.
+     *
+     * @return object
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function get()
+    {
+        return $this->doGet('tokens');
+    }
 }
