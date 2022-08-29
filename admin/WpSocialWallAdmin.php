@@ -56,36 +56,30 @@ class WpSocialWallAdmin
             register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_active");
             add_settings_section("wp-social-wall-settings-{$platformLower}", "{$platform} settings", function () use ($platformLower) {$this->renderSection($platformLower);}, 'social-wall');
             add_settings_field("wp-social-wall-{$platformLower}-active", "Include {$platform} posts", function () use ($platformLower) {$this->renderPlatformActiveInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
-            add_settings_field("wp-social-wall-{$platformLower}-id", "{$platform} ID", function () use ($platformLower) {$this->renderPlatformIdInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
+            // add_settings_field("wp-social-wall-{$platformLower}-id", "{$platform} ID", function () use ($platformLower) {$this->renderPlatformIdInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
 
-            if ($platformLower === 'facebook') {
-                add_settings_field("wp-social-wall-{$platformLower}-user-id", "{$platform} User ID", function () use ($platformLower) {$this->renderPlatformUserIdInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
-            }
+            // if ($platformLower === 'facebook') {
+            //     add_settings_field("wp-social-wall-{$platformLower}-user-id", "{$platform} User ID", function () use ($platformLower) {$this->renderPlatformUserIdInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
+            // }
 
-            add_settings_field("wp-social-wall-{$platformLower}-token", "{$platform} Token", function () use ($platformLower) {$this->renderPlatformTokenInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
+            // add_settings_field("wp-social-wall-{$platformLower}-token", "{$platform} Token", function () use ($platformLower) {$this->renderPlatformTokenInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
         }
 
     }
 
     public function renderSection($platform): void
     {
+        $token = get_option('wp_social_wall_api_token');
+        $site = explode('wp-admin/', $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])[0] . 'wp-admin/admin.php?page=social-wall';
+
         echo '<hr />';
 
         switch ($platform) {
             case 'facebook':
-                echo '
-                    <div
-                        class="fb-login-button"
-                        data-size="medium"
-                        data-button-type="login_with"
-                        data-auto-logout-link="false"
-                        data-use-continue-as="false"
-                        data-scope="pages_read_engagement"
-                    ></div>
-                ';
+                echo "<a class=\"button button-primary\" href=\"https://wp-social-wall.feelgoodtechnology.nl/?action=facebook-authentication&authenticationToken={$token}&redirectUrl={$site}\">Connect with Facebook</a>";
                 break;
             case 'twitter':
-                echo '<button type="button" class="button button-primary" id="twitter-login-button">Login with Twitter</button>';
+                echo '<button type="button" class="button button-primary" id="twitter-login-button">Connect with Twitter</button>';
                 break;
             default:
         }
