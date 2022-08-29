@@ -68,9 +68,9 @@ class WpSocialWallAdmin
         echo '<hr />';
 
         if (in_array($platform, $connectedPlatforms)) {
-            echo '<div><p>Platform is connected: <i style="width: 10px; height: 10px; border-radius: 50%; background: #32a852;"></i></p></div>';
+            echo '<div><p><i style="width: 12px; height: 12px; border-radius: 50%; background: #32a852; display: inline-block;"></i> Platform is connected</p></div>';
         } else {
-            echo '<div><p>Platform not connected: <i style="width: 10px; height: 10px; border-radius: 50%; background: #d63638;"></i></p></div>';
+            echo '<div><p><i style="width: 12px; height: 12px; border-radius: 50%; background: #d63638; display: inline-block;"></i> Platform not connected</p></div>';
         }
 
         switch ($platform) {
