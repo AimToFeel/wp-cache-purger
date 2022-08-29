@@ -76,4 +76,4 @@ do_action('wp_social_wall_render_token_information');
    })();
 </script>
 
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v14.0&appId=516765780209891&autoLogAppEvents=1" nonce="J0Cvd48y"></script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v14.0&appId=5238538342939990&autoLogAppEvents=1" nonce="J0Cvd48y"></script>
