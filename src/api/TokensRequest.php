@@ -4,21 +4,29 @@ namespace WpSocialWall\src\api;
 
 class TokensRequest extends BaseRequest
 {
+    /**
+     * Store token post request.
+     *
+     * @param string $platform
+     * @param string $accessToken
+     * @param string $verifyToken
+     *
+     * @return object
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
     public function store(
         $platform,
         $accessToken,
         $verifyToken = null,
-        $pageId = null,
-        $userId = null
     ) {
         return $this->doPost(
             'tokens',
             [
                 'platform' => $platform,
-                'pageId' => $pageId,
                 'accessToken' => $accessToken,
                 'verifyToken' => $verifyToken,
-                'userId' => $userId,
             ]
         );
     }

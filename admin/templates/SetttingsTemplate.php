@@ -4,14 +4,13 @@
 <?php
 
 settings_fields('wp_social_wall');
-do_settings_sections('social-wall');
+do_settings_sections('wp-social-wall');
 submit_button();
 
 do_action('wp_social_wall_render_token_information');
 
 ?>
 </form>
-
 
 <script>
    (() => {

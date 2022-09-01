@@ -18,6 +18,21 @@ class WpSocialWallAdmin
     }
 
     /**
+     * Define plugin hooks.
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function defineHooks(): void
+    {
+        add_action('admin_init', [$this, 'initialize']);
+        add_action('admin_menu', [$this, 'makeAdminMenu']);
+        add_action('wp_social_wall_render_token_information', [$this, 'renderTokenInformation']);
+    }
+
+    /**
      * On social wall plugin initialize.
      *
      * @return void
@@ -38,32 +53,27 @@ class WpSocialWallAdmin
         foreach ($platforms as $platform) {
             $platformLower = strtolower($platform);
 
-            register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_id", [
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => null,
-            ]);
-            register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_token", [
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => null,
-            ]);
-            register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_user_id", [
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => null,
-            ]);
             register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_active");
-            add_settings_section("wp-social-wall-settings-{$platformLower}", "{$platform} settings", function () use ($platformLower, $connectedPlatforms) {$this->renderSection($platformLower, $connectedPlatforms);}, 'social-wall');
-            add_settings_field("wp-social-wall-{$platformLower}-active", "Include {$platform} posts", function () use ($platformLower) {$this->renderPlatformActiveInput($platformLower);}, 'social-wall', "wp-social-wall-settings-{$platformLower}");
+            add_settings_section("wp-social-wall-settings-{$platformLower}", "{$platform} settings", function () use ($platformLower, $connectedPlatforms) {$this->renderSection($platformLower, $connectedPlatforms);}, 'wp-social-wall');
+            add_settings_field("wp-social-wall-{$platformLower}-active", "Include {$platform} posts", function () use ($platformLower) {$this->renderPlatformActiveInput($platformLower);}, 'wp-social-wall', "wp-social-wall-settings-{$platformLower}");
         }
-
     }
 
+    /**
+     * Render platform section.
+     *
+     * @param string $platform
+     * @param array $connectedPlatforms
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
     public function renderSection($platform, $connectedPlatforms): void
     {
         $token = get_option('wp_social_wall_api_token');
-        $site = explode('wp-admin/', $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])[0] . 'wp-admin/admin.php?page=social-wall';
+        $site = get_admin_url() . 'admin.php?page=wp-social-wall';
 
         echo '<hr />';
 
@@ -80,9 +90,23 @@ class WpSocialWallAdmin
             case 'twitter':
                 echo '<button type="button" class="button button-primary" id="twitter-login-button">Connect with Twitter</button>';
                 break;
+            case 'instagram':
+                echo "<a class=\"button button-primary\" href=\"https://wp-social-wall.feelgoodtechnology.nl/?action=instagram-authentication&authenticationToken={$token}&redirectUrl={$site}\">Connect with Instagram</a>";
+                break;
             default:
         }
     }
+
+    /**
+     * Rebder platform active input.
+     *
+     * @param string $platform
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
     public function renderPlatformActiveInput($platform): void
     {
         $value = get_option('wp_social_wall_' . $platform . '_active');
@@ -92,32 +116,40 @@ class WpSocialWallAdmin
         echo ' />';
     }
 
-    public function makeAdminMenu(): void
-    {
-        add_menu_page('Social Wall settings', 'Social Wall', 'manage_options', 'social-wall', [$this, 'renderSettingsPage'], plugin_dir_url($this->file) . 'admin/assets/brickwall-small.png');
-
-    }
-
-    public function renderSettingsPage(): void
-    {
-        require_once HOME_DIRETORY_WP_SOCIAL_WALL . '/admin/templates/SetttingsTemplate.php';
-    }
-
     /**
-     * Define plugin hooks.
+     * Create admin menu item.
      *
      * @return void
      *
      * @author Niek van der Velde <niek@aimtofeel.com>
      * @version 1.0.0
      */
-    public function defineHooks(): void
+    public function makeAdminMenu(): void
     {
-        add_action('admin_init', [$this, 'initialize']);
-        add_action('admin_menu', [$this, 'makeAdminMenu']);
-        add_action('wp_social_wall_render_token_information', [$this, 'renderTokenInformation']);
+        add_menu_page('WP Social Wall', 'WP Social Wall', 'manage_options', 'wp-social-wall', [$this, 'renderSettingsPage'], plugin_dir_url($this->file) . 'admin/assets/brickwall-small.png');
     }
 
+    /**
+     * Render settings page.
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function renderSettingsPage(): void
+    {
+        require_once HOME_DIRETORY_WP_SOCIAL_WALL . '/admin/templates/SetttingsTemplate.php';
+    }
+
+    /**
+     * Render site token information.
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
     public function renderTokenInformation(): void
     {
         $token = get_option('wp_social_wall_api_token');
@@ -129,6 +161,14 @@ class WpSocialWallAdmin
         }
     }
 
+    /**
+     * Register site to WP Social Wall API.
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
     private function registerSite(): void
     {
         $siteToken = get_option('wp_social_wall_api_token');
@@ -144,6 +184,14 @@ class WpSocialWallAdmin
         }
     }
 
+    /**
+     * Catch Twitter callback and store to WP Social Wall API.
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
     private function registerTwitterCallback(): void
     {
         if (!isset($_GET['oauthToken']) || !isset($_GET['oauthVerifier'])) {
@@ -153,6 +201,14 @@ class WpSocialWallAdmin
         (new TokensRequest())->store('twitter', $_GET['oauthToken'], $_GET['oauthVerifier']);
     }
 
+    /**
+     * Fetch connected platforms from WP Social Wall API.
+     *
+     * @return array
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
     private function fetchConnectedPlatforms(): array
     {
         return (new TokensRequest())->get()->data;

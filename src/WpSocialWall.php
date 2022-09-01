@@ -28,7 +28,7 @@ class WpSocialWall
     public function initialize(): void
     {
         define('WP_SOCIAL_WALL_PLATFORMS', [
-            'Facebook', 'Twitter', 'Instagram', 'TikTok', 'Linkedin',
+            'Facebook', 'Twitter', 'Instagram',
         ]);
 
         $deactivationHook = new DeactivationHook();
@@ -81,21 +81,6 @@ class WpSocialWall
     }
 
     /**
-     * Get posts.
-     *
-     * @param array $parameters
-     *
-     * @return array
-     *
-     * @author Niek van der Velde <niek@aimtofeel.com>
-     * @version 1.0.0
-     */
-    public function getPosts($parameters = []): array
-    {
-        return (new Posts())->get();
-    }
-
-    /**
      * Define plugin hooks.
      *
      * @return void
@@ -108,7 +93,6 @@ class WpSocialWall
         add_action('init', [$this, 'initialize']);
         add_filter('cron_schedules', [$this, 'defineCronSchedule']);
         add_action('wp_social_wall_fetch_posts', [$this, 'fetchPosts']);
-        add_filter('get_wp_social_wall_posts', [$this, 'getPosts']);
 
         $activationHook = new ActivationHook();
         register_activation_hook($this->file, [$activationHook, 'run']);

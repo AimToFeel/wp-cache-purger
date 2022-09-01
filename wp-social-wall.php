@@ -12,6 +12,7 @@
 
 use WpSocialWall\admin\WpSocialWallAdmin;
 use WpSocialWall\src\WpSocialWall;
+use WpSocialWall\src\WpSocialWallApi;
 
 if (!function_exists('add_action')) {
     die('Not allowed to call WP Social Wall directly.');
@@ -26,3 +27,6 @@ $wpSocialWall->defineHooks();
 
 $wpSocialWallAdmin = new WpSocialWallAdmin(__FILE__);
 $wpSocialWallAdmin->defineHooks();
+
+// Global API Definition
+define('WP_SOCIAL_WALL', new WpSocialWallApi());
