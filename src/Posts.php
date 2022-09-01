@@ -23,13 +23,13 @@ class Posts
         if (isset($parameters['platforms'])) {
             $platforms = implode("','", $parameters['platforms']);
 
-            $result = preg_match("(\'(" . implode('|', WP_SOCIAL_WALL_PLATFORMS) . ")\'(,)?)*", "'{$platforms}'");
+            preg_match("/(\'(" . strtolower(implode('|', WP_SOCIAL_WALL_PLATFORMS)) . ")\'(,)?)*/", "'{$platforms}'", $results);
 
-            if (!isset($result[0]) || !isset($result[0][0])) {
+            if (!isset($results[0]) || $results[0] !== "'{$platforms}'") {
                 throw new WpSocialWallException("Platform string ill-formed: `'{$platforms}'`.");
             }
 
-            $query .= " WHERE platform IN ({$result[0][0]})";
+            $query .= " WHERE platform IN ({$results[0]})";
         }
 
         $query .= ' ORDER BY post_date DESC';
