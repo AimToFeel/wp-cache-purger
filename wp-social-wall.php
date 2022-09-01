@@ -29,4 +29,7 @@ $wpSocialWallAdmin = new WpSocialWallAdmin(__FILE__);
 $wpSocialWallAdmin->defineHooks();
 
 // Global API Definition
-define('WP_SOCIAL_WALL', new WpSocialWallApi());
+function get_wp_social_wall_api()
+{
+    return new WpSocialWallApi();
+}

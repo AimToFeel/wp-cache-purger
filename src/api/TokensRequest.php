@@ -19,7 +19,7 @@ class TokensRequest extends BaseRequest
     public function store(
         $platform,
         $accessToken,
-        $verifyToken = null,
+        $verifyToken = null
     ) {
         return $this->doPost(
             'tokens',
