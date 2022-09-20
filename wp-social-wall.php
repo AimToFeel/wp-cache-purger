@@ -2,7 +2,7 @@
 /**
  * Plugin name: WP Social Wall
  * Description: Collects social media activity and stores them in a shared table.
- * Version: 1.2.2
+ * Version: 1.3.0
  * Author: AimToFeel
  * Author URI: https://aimtofeel.com
  * License: GPLv2
