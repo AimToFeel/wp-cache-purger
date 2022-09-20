@@ -2,7 +2,7 @@
 
 namespace WpSocialWall\admin;
 
-use WpSocialWall\src\api\SitesRequest;
+use Exception;
 use WpSocialWall\src\api\TokensRequest;
 
 class WpSocialWallAdmin
@@ -29,7 +29,6 @@ class WpSocialWallAdmin
     {
         add_action('admin_init', [$this, 'initialize']);
         add_action('admin_menu', [$this, 'makeAdminMenu']);
-        add_action('wp_social_wall_render_token_information', [$this, 'renderTokenInformation']);
     }
 
     /**
@@ -44,19 +43,25 @@ class WpSocialWallAdmin
     {
         $platforms = WP_SOCIAL_WALL_PLATFORMS;
 
-        $this->registerSite();
-
         $this->registerTwitterCallback();
 
+        $token = get_option('wp_social_wall_api_token');
         $connectedPlatforms = $this->fetchConnectedPlatforms();
 
-        foreach ($platforms as $platform) {
-            $platformLower = strtolower($platform);
+        if ($connectedPlatforms !== false) {
+            foreach ($platforms as $platform) {
+                $platformLower = strtolower($platform);
 
-            register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_active");
-            add_settings_section("wp-social-wall-settings-{$platformLower}", "{$platform} settings", function () use ($platformLower, $connectedPlatforms) {$this->renderSection($platformLower, $connectedPlatforms);}, 'wp-social-wall');
-            add_settings_field("wp-social-wall-{$platformLower}-active", "Include {$platform} posts", function () use ($platformLower) {$this->renderPlatformActiveInput($platformLower);}, 'wp-social-wall', "wp-social-wall-settings-{$platformLower}");
+                register_setting('wp_social_wall', "wp_social_wall_{$platformLower}_active");
+                add_settings_section("wp-social-wall-settings-{$platformLower}", "{$platform} settings", function () use ($platformLower, $connectedPlatforms) {$this->renderSection($platformLower, $connectedPlatforms);}, 'wp-social-wall');
+                add_settings_field("wp-social-wall-{$platformLower}-active", "Include {$platform} posts", function () use ($platformLower) {$this->renderPlatformActiveInput($platformLower);}, 'wp-social-wall', "wp-social-wall-settings-{$platformLower}");
+            }
         }
+
+        register_setting('wp_social_wall', 'wp_social_wall_api_token');
+
+        add_settings_section('wp-social-wall-settings-token', 'Token settings', function () use ($connectedPlatforms) {$this->renderTokenSection($connectedPlatforms !== false);}, 'wp-social-wall');
+        add_settings_field('wp-social-wall-token', 'API token', function () use ($token) {$this->renderApiTokenInput($token);}, 'wp-social-wall', 'wp-social-wall-settings-token');
     }
 
     /**
@@ -77,7 +82,7 @@ class WpSocialWallAdmin
 
         echo '<hr />';
 
-        if (in_array($platform, $connectedPlatforms)) {
+        if ($connectedPlatforms !== false && in_array($platform, $connectedPlatforms)) {
             echo '<div><p><i style="width: 12px; height: 12px; border-radius: 50%; background: #32a852; display: inline-block;"></i> Platform is connected</p></div>';
         } else {
             echo '<div><p><i style="width: 12px; height: 12px; border-radius: 50%; background: #d63638; display: inline-block;"></i> Platform not connected</p></div>';
@@ -98,7 +103,32 @@ class WpSocialWallAdmin
     }
 
     /**
-     * Rebder platform active input.
+     * Render token section.
+     *
+     * @param bool $connected
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function renderTokenSection($connected): void
+    {
+        echo '<hr />';
+
+        echo '<p>To get started we need to connect the plugin with our API. Please visit the <a href="https://wp-social-wall.feelgoodtechnology.nl" target="_blank">WP Social Wall</a> site to request an API token. Yes, this is free!</p>';
+
+        $token = get_option('wp_social_wall_api_token');
+
+        if ($connected) {
+            echo '<p id="api-token" data-token="' . $token . '"><i style="width: 12px; height: 12px; border-radius: 50%; background: #32a852; display: inline-block;"></i> Connection with wp-social-wall API enstablished, access token: "' . $token . '".</p>';
+        } else {
+            echo '<p id="api-token"><i style="width: 12px; height: 12px; border-radius: 50%; background: #d63638; display: inline-block;"></i> Connection with wp-social-wall API not yet enstablished.</p>';
+        }
+    }
+
+    /**
+     * Render platform active input.
      *
      * @param string $platform
      *
@@ -114,6 +144,21 @@ class WpSocialWallAdmin
         echo '<input name="wp_social_wall_' . $platform . '_active" type="checkbox" value="1" ';
         checked(1, $value, true);
         echo ' />';
+    }
+
+    /**
+     * Render api token input.
+     *
+     * @param string $token
+     *
+     * @return void
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function renderApiTokenInput($token): void
+    {
+        echo '<input name="wp_social_wall_api_token" type="text" value="' . $token . '" />';
     }
 
     /**
@@ -143,48 +188,6 @@ class WpSocialWallAdmin
     }
 
     /**
-     * Render site token information.
-     *
-     * @return void
-     *
-     * @author Niek van der Velde <niek@aimtofeel.com>
-     * @version 1.0.0
-     */
-    public function renderTokenInformation(): void
-    {
-        $token = get_option('wp_social_wall_api_token');
-
-        if ($token) {
-            echo '<p id="api-token" data-token="' . $token . '">Connection with wp-social-wall API enstablished, access token: "' . $token . '".</p>';
-        } else {
-            echo '<p id="api-token">Connection with wp-social-wall API not yet enstablished.</p>';
-        }
-    }
-
-    /**
-     * Register site to WP Social Wall API.
-     *
-     * @return void
-     *
-     * @author Niek van der Velde <niek@aimtofeel.com>
-     * @version 1.0.0
-     */
-    private function registerSite(): void
-    {
-        $siteToken = get_option('wp_social_wall_api_token');
-
-        if ($siteToken) {
-            return;
-        }
-
-        $result = (new SitesRequest())->store($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-
-        if ($result) {
-            update_option('wp_social_wall_api_token', $result->site->access_token);
-        }
-    }
-
-    /**
      * Catch Twitter callback and store to WP Social Wall API.
      *
      * @return void
@@ -204,13 +207,23 @@ class WpSocialWallAdmin
     /**
      * Fetch connected platforms from WP Social Wall API.
      *
-     * @return array
+     * @return array|boolean
      *
      * @author Niek van der Velde <niek@aimtofeel.com>
      * @version 1.0.0
      */
-    private function fetchConnectedPlatforms(): array
+    private function fetchConnectedPlatforms()
     {
-        return (new TokensRequest())->get()->data;
+        try {
+            $response = (new TokensRequest())->get();
+
+            if (isset($response)) {
+                return $response->data;
+            }
+
+            return false;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

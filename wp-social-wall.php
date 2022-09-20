@@ -7,7 +7,7 @@
  * Author URI: https://aimtofeel.com
  * License: GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text domain: wp-swift-mailer
+ * Text domain: wp-social-wall
  */
 
 use WpSocialWall\admin\WpSocialWallAdmin;
