@@ -78,7 +78,7 @@ class WpSocialWallAdmin
     public function renderSection($platform, $connectedPlatforms): void
     {
         $token = get_option('wp_social_wall_api_token');
-        $site = get_admin_url() . 'admin.php?page=wp-social-wall';
+        $site = urlencode(get_admin_url());
 
         echo '<hr />';
 
@@ -90,13 +90,13 @@ class WpSocialWallAdmin
 
         switch ($platform) {
             case 'facebook':
-                echo "<a class=\"button button-primary\" href=\"https://wp-social-wall.feelgoodtechnology.nl/?action=facebook-authentication&authenticationToken={$token}&redirectUrl={$site}\">Connect with Facebook</a>";
+                echo "<a class=\"button button-primary\" href=\"https://wp-social-wall.feelgoodtechnology.nl/register-platform?action=facebook-authentication&authenticationToken={$token}&redirectUrl={$site}\">Connect with Facebook</a>";
                 break;
             case 'twitter':
                 echo '<button type="button" class="button button-primary" id="twitter-login-button">Connect with Twitter</button>';
                 break;
             case 'instagram':
-                echo "<a class=\"button button-primary\" href=\"https://wp-social-wall.feelgoodtechnology.nl/?action=instagram-authentication&authenticationToken={$token}&redirectUrl={$site}\">Connect with Instagram</a>";
+                echo "<a class=\"button button-primary\" href=\"https://wp-social-wall.feelgoodtechnology.nl/register-platform?action=instagram-authentication&authenticationToken={$token}&redirectUrl={$site}\">Connect with Instagram</a>";
                 break;
             default:
         }
@@ -116,7 +116,7 @@ class WpSocialWallAdmin
     {
         echo '<hr />';
 
-        echo '<p>To get started we need to connect the plugin with our API. Please visit the <a href="https://wp-social-wall.feelgoodtechnology.nl" target="_blank">WP Social Wall</a> site to request an API token. Yes, this is free!</p>';
+        echo '<p>To get started we need to connect the plugin with our API. Please visit the <a href="https://wp-social-wall.feelgoodtechnology.nl/token" target="_blank">WP Social Wall</a> site to request an API token. Yes, this is free!</p>';
 
         $token = get_option('wp_social_wall_api_token');
 
