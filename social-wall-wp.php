@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin name: WP Social Wall
+ * Plugin name: Social Wall WP
  * Description: Collects social media activity and stores them in a shared table.
  * Version: 1.4.0
  * Author: AimToFeel
  * Author URI: https://aimtofeel.com
  * License: GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text domain: wp-social-wall
+ * Text domain: social-wall-wp
  */
 
 use WpSocialWall\admin\WpSocialWallAdmin;
