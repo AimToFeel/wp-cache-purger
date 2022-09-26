@@ -22,22 +22,24 @@ class BaseRequest
         $url = "{$this->baseUrl}/{$location}";
         $apiToken = get_option('wp_social_wall_api_token');
 
-        $options = [
-            'http' => [
-                'header' => "Content-type: application/json\r\nAccept: application/json\r\nAuthorization: {$apiToken}\r\n",
+        $result = wp_remote_post(
+            $url,
+            [
                 'method' => 'POST',
-                'content' => json_encode($payload),
-            ],
-        ];
+                'headers' => [
+                    'Content-type' => 'application/json',
+                    'nAccept' => 'application/json',
+                    'Authorization' => $apiToken,
+                ],
+                'body' => json_encode($payload),
+            ]
+        );
 
-        $context = stream_context_create($options);
-        $result = @file_get_contents($url, false, $context);
-
-        if ($result === false) {
+        if (is_wp_error($result)) {
             return null;
         }
 
-        return json_decode($result);
+        return json_decode($result['body']);
     }
 
     /**
@@ -56,20 +58,22 @@ class BaseRequest
         $url = "{$this->baseUrl}/{$location}";
         $apiToken = get_option('wp_social_wall_api_token');
 
-        $options = [
-            'http' => [
-                'header' => "Content-type: application/json\r\nAccept: application/json\r\nAuthorization: {$apiToken}\r\n",
+        $result = wp_remote_get(
+            $url,
+            [
                 'method' => 'GET',
-            ],
-        ];
+                'headers' => [
+                    'Content-type' => 'application/json',
+                    'nAccept' => 'application/json',
+                    'Authorization' => $apiToken,
+                ],
+            ]
+        );
 
-        $context = stream_context_create($options);
-        $result = @file_get_contents($url, false, $context);
-
-        if ($result === false) {
+        if (is_wp_error($result)) {
             return null;
         }
 
-        return json_decode($result);
+        return json_decode($result['body']);
     }
 }
