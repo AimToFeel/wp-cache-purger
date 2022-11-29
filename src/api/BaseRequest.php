@@ -1,10 +1,10 @@
 <?php
 
-namespace WpSocialWall\src\api;
+namespace WpCachePurger\src\api;
 
 class BaseRequest
 {
-    private $baseUrl = 'https://api.wp-social-wall.feelgoodtechnology.nl';
+    private $baseUrl = 'https://cache-purge.feelgoodtechnology.nl';
 
     /**
      * Do post request.
@@ -20,7 +20,6 @@ class BaseRequest
     protected function doPost($location, $payload)
     {
         $url = "{$this->baseUrl}/{$location}";
-        $apiToken = get_option('wp_social_wall_api_token');
 
         $result = wp_remote_post(
             $url,
@@ -28,8 +27,7 @@ class BaseRequest
                 'method' => 'POST',
                 'headers' => [
                     'Content-type' => 'application/json',
-                    'nAccept' => 'application/json',
-                    'Authorization' => $apiToken,
+                    'Accept' => 'application/json',
                 ],
                 'body' => json_encode($payload),
             ]
@@ -56,7 +54,6 @@ class BaseRequest
     protected function doGet($location)
     {
         $url = "{$this->baseUrl}/{$location}";
-        $apiToken = get_option('wp_social_wall_api_token');
 
         $result = wp_remote_get(
             $url,
@@ -64,8 +61,7 @@ class BaseRequest
                 'method' => 'GET',
                 'headers' => [
                     'Content-type' => 'application/json',
-                    'nAccept' => 'application/json',
-                    'Authorization' => $apiToken,
+                    'Accept' => 'application/json',
                 ],
             ]
         );

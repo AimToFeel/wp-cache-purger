@@ -1,6 +1,6 @@
 {
-    "name": "aimtofeel/wp-social-wall",
-    "description": "Makes a social wall function available from multiple sources.",
+    "name": "aimtofeel/wp-cache-purger",
+    "description": "Purges server side cache by calling a purger api.",
     "keywords": ["Wordpress"],
     "homepage": "https://aimtofeel.com",
     "license": "GPL-2.0-or-later",
