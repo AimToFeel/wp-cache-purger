@@ -2,7 +2,7 @@
 /**
  * Plugin name: Cache purger
  * Description: Purges server side cache by calling a purger api
- * Version: 1.0.0
+ * Version: 1.6.1
  * Author: AimToFeel
  * Author URI: https://aimtofeel.com
  * License: GPLv2
