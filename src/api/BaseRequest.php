@@ -4,7 +4,7 @@ namespace WpCachePurger\src\api;
 
 class BaseRequest
 {
-    private $baseUrl = 'https://cache-purge.feelgoodtechnology.nl';
+    private $baseUrl = 'http://cache-purge-nginx';
 
     /**
      * Do post request.
