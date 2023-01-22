@@ -4,7 +4,7 @@ namespace WpCachePurger\src\api;
 
 class BaseRequest
 {
-    private $baseUrl = 'http://cache-purge-nginx';
+    private $baseUrl = '/cache-purger';
 
     /**
      * Do post request.
@@ -19,7 +19,7 @@ class BaseRequest
      */
     protected function doPost($location, $payload)
     {
-        $url = "{$this->baseUrl}/{$location}";
+        $url = str_replace('/wp', '', get_site_url()) . "{$this->baseUrl}/{$location}";
 
         $result = wp_remote_post(
             $url,
