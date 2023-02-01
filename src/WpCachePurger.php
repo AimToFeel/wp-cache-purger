@@ -45,7 +45,9 @@ class WpCachePurger
      */
     public function purgePostCache($postId): void
     {
-        $url = get_permalink($postId);
+        $customFields = get_post_custom($postId);
+        $selectedPostId = isset($customFields['embedded_in']) ? $customFields['embedded_in'][0] : $postId;
+        $url = get_permalink($selectedPostId);
         $token = get_option('wp_cache_purger_authentication_token');
 
         (new PurgeRequest())->purge($url, $token);
