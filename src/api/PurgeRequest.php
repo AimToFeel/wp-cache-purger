@@ -26,4 +26,25 @@ class PurgeRequest extends BaseRequest
             ]
         );
     }
+
+    /**
+     * Purge all post request.
+     *
+     * @param string $url
+     *
+     * @return object
+     *
+     * @author Niek van der Velde <niek@aimtofeel.com>
+     * @version 1.0.0
+     */
+    public function purgeAll(
+        $authenticationToken
+    ) {
+        return $this->doPost(
+            'purge-all',
+            [
+                'authenticationToken' => $authenticationToken,
+            ]
+        );
+    }
 }
