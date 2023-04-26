@@ -197,7 +197,7 @@ class WpCachePurger
                                 "Accept": "application/json"
                             },
                             body: JSON.stringify({
-                                url: "' . (isset($_SERVER['HTTPS']) ? 'https' : 'http') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" . '",
+                                url: "http://' . $_SERVER[HTTP_HOST] . $_SERVER[REQUEST_URI] . '",
                                 authenticationToken: "' . get_option('wp_cache_purger_authentication_token') . '"
                             })
                         });
